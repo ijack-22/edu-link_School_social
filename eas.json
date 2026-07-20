@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 3.8.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "20.x",
+      "env": {
+        "EAS_BUILD_NATIVE_DIRECTORY_REUSE_ENABLED": "0"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "simulator": {
+      "ios": {
+        "simulator": true
+      }
+    },
+    "production": {
+      "env": {
+        "EAS_BUILD_NATIVE_DIRECTORY_REUSE_ENABLED": "0"
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

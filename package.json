@@ -1,0 +1,10 @@
+{
+  "name": "edulink-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EduLink web platform for school communication, classes, and messaging.",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build"
+  }
+}

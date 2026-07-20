@@ -1,0 +1,75 @@
+# ============================================
+# EduLink Ecosystem — Root .gitignore
+# ============================================
+
+# Dependencies
+node_modules/
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native builds
+android/
+ios/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+.kotlin/
+
+# Metro
+.metro-health-check*
+
+# Debug logs
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+*.swp
+*.swo
+*~
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Supabase local dev
+supabase/.temp/
+
+# Internal dev files
+payload.json
+# Python runtime
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Django local data
+*.sqlite3
+media/
+staticfiles/
+
+# Vite local build/dev output
+frontend/dist/
+frontend/dev-dist/
+frontend/node_modules/
