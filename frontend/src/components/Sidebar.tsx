@@ -48,6 +48,7 @@ const LINKS_BY_ROLE = {
   student: studentLinks,
   teacher: teacherLinks,
   admin: adminLinks,
+  administration: adminLinks,
   parent: parentLinks,
   registrar: registrarLinks,
 };

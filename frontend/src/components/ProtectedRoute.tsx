@@ -19,6 +19,7 @@ export const ProtectedRoute = ({ allowedRoles }: Props) => {
     // Wrong role — send them to their correct home
     const ROLE_HOME: Record<UserRole, string> = {
       admin: '/dashboard/admin',
+      administration: '/dashboard/admin',
       teacher: '/dashboard/teacher',
       student: '/dashboard/student',
       parent: '/dashboard/parent',

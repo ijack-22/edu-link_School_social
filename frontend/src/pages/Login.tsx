@@ -8,6 +8,7 @@ import '../index.css';
 // Role → dashboard route mapping
 const ROLE_HOME: Record<UserRole, string> = {
   admin: '/dashboard/admin',
+  administration: '/dashboard/admin',
   teacher: '/dashboard/teacher',
   student: '/dashboard/student',
   parent: '/dashboard/parent',
