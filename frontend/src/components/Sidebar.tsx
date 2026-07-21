@@ -1,4 +1,4 @@
-import { Home, Users, BookOpen, FileText, BellRing, LogOut, Settings, BarChart2, MessageSquare } from 'lucide-react';
+import { Home, Users, BookOpen, FileText, BellRing, LogOut, Settings, BarChart2, MessageSquare, AlertCircle } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,6 +7,8 @@ const studentLinks = [
   { to: '/feeds', label: 'School Feed', icon: FileText },
   { to: '/classes', label: 'My Classes', icon: BookOpen },
   { to: '/messages', label: 'Messages', icon: MessageSquare },
+  { to: '/complaints', label: 'Complaints', icon: AlertCircle },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const teacherLinks = [
@@ -14,6 +16,8 @@ const teacherLinks = [
   { to: '/feeds', label: 'School Feed', icon: FileText },
   { to: '/classes', label: 'My Classes', icon: BookOpen },
   { to: '/workflow', label: 'Workflow', icon: BarChart2 },
+  { to: '/complaints', label: 'Complaints', icon: AlertCircle },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const adminLinks = [
@@ -22,6 +26,7 @@ const adminLinks = [
   { to: '/classes', label: 'Classes', icon: BookOpen },
   { to: '/messages', label: 'Messages', icon: MessageSquare },
   { to: '/workflow', label: 'Workflow', icon: BarChart2 },
+  { to: '/complaints', label: 'Complaints', icon: AlertCircle },
   { to: '/users', label: 'Users', icon: Users },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
@@ -29,9 +34,8 @@ const adminLinks = [
 const parentLinks = [
   { to: '/dashboard/parent', label: 'Home', icon: Home },
   { to: '/feeds', label: 'School Feed', icon: FileText },
-  { to: '/classes', label: 'Classes', icon: BookOpen },
-  { to: '/messages', label: 'Messages', icon: MessageSquare },
-  { to: '/workflow', label: 'Workflow', icon: BarChart2 },
+  { to: '/complaints', label: 'Complaints', icon: AlertCircle },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 const registrarLinks = [

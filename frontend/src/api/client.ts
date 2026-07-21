@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
         // Ping the refresh endpoint. Since withCredentials is true, 
         // the browser sends the HttpOnly refresh_token cookie automatically.
         const response = await axios.post(
-          `${apiClient.defaults.baseURL}/users/token/refresh/`,
+          `${apiClient.defaults.baseURL}/users/auth/refresh/`,
           {},
           { withCredentials: true }
         );

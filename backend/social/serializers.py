@@ -77,14 +77,14 @@ class MessageSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Students can only message administration or classmates.')
 
         if sender.role == User.Role.PARENT:
-            if receiver.role == User.Role.ADMINISTRATION:
+            if receiver.role in {User.Role.ADMINISTRATION, User.Role.REGISTRAR}:
                 return value
-            raise serializers.ValidationError('Parents can only message administration.')
+            raise serializers.ValidationError('Parents can only message administration and registrar.')
 
         if sender.role == User.Role.REGISTRAR:
-            if receiver.role == User.Role.ADMINISTRATION:
+            if receiver.role in {User.Role.ADMINISTRATION, User.Role.PARENT}:
                 return value
-            raise serializers.ValidationError('Registrar can only message administration.')
+            raise serializers.ValidationError('Registrar can only message administration and parents.')
 
         if sender.role == User.Role.ADMINISTRATION:
             if receiver.role in {User.Role.STUDENT, User.Role.PARENT, User.Role.REGISTRAR, User.Role.ADMINISTRATION}:

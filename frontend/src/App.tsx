@@ -11,6 +11,8 @@ import { TeacherDashboard } from './pages/dashboards/TeacherDashboard';
 import { AdminDashboard } from './pages/dashboards/AdminDashboard';
 import { ParentDashboard } from './pages/dashboards/ParentDashboard';
 import { SchoolWorkflow } from './pages/SchoolWorkflow';
+import { Users } from './pages/Users';
+import { Settings } from './pages/Settings';
 import './index.css';
 
 /**
@@ -52,6 +54,7 @@ const AppLayout = () => {
           {/* Admin routes */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
             <Route path="/dashboard/admin" element={<AdminDashboard />} />
+            <Route path="/users" element={<Users />} />
           </Route>
 
           {/* Parent routes */}
@@ -67,6 +70,7 @@ const AppLayout = () => {
               <Route path="/messages" element={<Messages />} />
             </Route>
             <Route path="/workflow" element={<SchoolWorkflow />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           {/* Fallback */}
