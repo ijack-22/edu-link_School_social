@@ -23,12 +23,22 @@ class EmailTokenObtainPairView(TokenObtainPairView):
         password = request.data.get('password')
 
         if email and password:
-            user = authenticate(request=request, username=email, password=password)
-            if user is None:
-                user = authenticate(request=request, email=email, password=password)
-            if user is not None:
-                request.data['username'] = user.get_username()
-                request.data['password'] = password
+            try:
+                user = User.objects.get(email=email)
+                # request.data might be immutable, make a mutable copy
+                if hasattr(request.data, 'copy'):
+                    data = request.data.copy()
+                else:
+                    data = dict(request.data)
+                data['username'] = user.username
+                data['password'] = password
+                
+                # Pass modified data to the serializer manually
+                serializer = self.get_serializer(data=data)
+                serializer.is_valid(raise_exception=True)
+                return Response(serializer.validated_data, status=200)
+            except User.DoesNotExist:
+                pass
 
         return super().post(request, *args, **kwargs)
 
