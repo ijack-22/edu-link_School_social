@@ -73,14 +73,7 @@ export default function Login() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-          <h1 style={{
-            background: 'linear-gradient(135deg, #38bdf8, #ec4899)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            fontSize: '2.4rem',
-            fontWeight: 800,
-            letterSpacing: '-1px',
-          }}>EduLink</h1>
+          <img src="/logo.png" alt="EduLink Logo" style={{ height: '64px', margin: '0 auto', display: 'block' }} />
           <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '6px' }}>
             Sign in to your school portal
           </p>

@@ -70,13 +70,7 @@ export const Sidebar = () => {
     <nav className="sidebar">
       {/* Logo */}
       <div style={{ marginBottom: '32px', padding: '0 8px' }}>
-        <h1 style={{
-          background: 'linear-gradient(to right, #38bdf8, #ec4899)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          fontSize: '2rem',
-          fontWeight: 800,
-        }}>EduLink</h1>
+        <img src="/logo.png" alt="EduLink Logo" style={{ height: '40px', display: 'block' }} />
         {user && (
           <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
