@@ -57,7 +57,9 @@ export const SchoolWorkflow = () => {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [notice, setNotice] = useState('');
   const [createdPassword, setCreatedPassword] = useState('');
+  const [createdEmail, setCreatedEmail] = useState('');
   const [parentPassword, setParentPassword] = useState('');
+  const [parentEmail, setParentEmail] = useState('');
   const [selectedRole, setSelectedRole] = useState('student');
 
   const students = useMemo(() => users.filter((item) => item.role === 'student'), [users]);
@@ -111,9 +113,16 @@ export const SchoolWorkflow = () => {
       parent_email: String(form.get('parent_email') || ''),
     };
     const response = await apiClient.post('users/create/', payload);
+    setCreatedEmail(payload.email);
     setCreatedPassword(response.data.temporary_password || '');
-    setParentPassword(response.data.parent_temporary_password || '');
-    setNotice('Account created. Share the generated password privately.');
+    if (response.data.parent_temporary_password) {
+      setParentEmail(payload.parent_email);
+      setParentPassword(response.data.parent_temporary_password);
+    } else {
+      setParentEmail('');
+      setParentPassword('');
+    }
+    setNotice('Account created successfully. See login credentials below.');
     event.currentTarget.reset();
     loadData();
   };
@@ -163,13 +172,6 @@ export const SchoolWorkflow = () => {
     event.currentTarget.reset();
   };
 
-  const changePassword = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const form = new FormData(event.currentTarget);
-    await apiClient.post('users/change-password/', Object.fromEntries(form.entries()));
-    setNotice('Password updated.');
-    event.currentTarget.reset();
-  };
 
   const updateGradeStatus = async (grade: GradeItem, status: 'approved' | 'rejected') => {
     await apiClient.patch(`academics/grades/${grade.id}/`, { status });
@@ -197,7 +199,6 @@ export const SchoolWorkflow = () => {
               {[
                 { id: 'student', label: 'Student (+ Parent)' },
                 { id: 'teacher', label: 'Teacher' },
-                { id: 'parent', label: 'Parent Only' },
                 { id: 'registrar', label: 'Registrar' },
                 { id: 'administration', label: 'Administrator' },
               ].map((roleItem) => {
@@ -255,10 +256,22 @@ export const SchoolWorkflow = () => {
             </form>
 
             {createdPassword && (
-              <div style={{ background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.3)', borderRadius: '10px', padding: '14px', marginTop: '14px' }}>
-                <p style={{ margin: 0, color: '#34d399', fontWeight: 600 }}>Account created successfully!</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem' }}>User Temporary Password: <strong style={{ color: 'white' }}>{createdPassword}</strong></p>
-                {parentPassword && <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem' }}>Parent Temporary Password: <strong style={{ color: 'white' }}>{parentPassword}</strong></p>}
+              <div style={{ background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.3)', borderRadius: '10px', padding: '16px', marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <p style={{ margin: 0, color: '#34d399', fontWeight: 700, fontSize: '1.05rem' }}>✅ Account(s) created successfully!</p>
+                
+                <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px' }}>
+                  <p style={{ margin: '0 0 6px 0', fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>{selectedRole} Login</p>
+                  <p style={{ margin: '0 0 4px 0', fontSize: '0.95rem' }}>Email: <strong style={{ color: 'white' }}>{createdEmail}</strong></p>
+                  <p style={{ margin: 0, fontSize: '0.95rem' }}>Password: <strong style={{ color: 'white', letterSpacing: '1px' }}>{createdPassword}</strong></p>
+                </div>
+
+                {parentPassword && (
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px' }}>
+                    <p style={{ margin: '0 0 6px 0', fontSize: '0.9rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>Parent Login</p>
+                    <p style={{ margin: '0 0 4px 0', fontSize: '0.95rem' }}>Email: <strong style={{ color: 'white' }}>{parentEmail}</strong></p>
+                    <p style={{ margin: 0, fontSize: '0.95rem' }}>Password: <strong style={{ color: 'white', letterSpacing: '1px' }}>{parentPassword}</strong></p>
+                  </div>
+                )}
               </div>
             )}
           </section>
@@ -320,14 +333,7 @@ export const SchoolWorkflow = () => {
           </section>
         )}
 
-        <section className="glass-panel" style={panelStyle}>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Change password</h2>
-          <form onSubmit={changePassword} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-            <input name="current_password" type="password" placeholder="Current password" required style={fieldStyle} />
-            <input name="new_password" type="password" placeholder="New password" required style={fieldStyle} />
-            <button className="btn" style={{ minHeight: '44px' }}>Update password</button>
-          </form>
-        </section>
+
 
         {(canApproveGrades || user?.role === 'teacher' || user?.role === 'student' || user?.role === 'parent') && (
           <section className="glass-panel" style={panelStyle}>
