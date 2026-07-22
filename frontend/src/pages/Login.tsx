@@ -73,8 +73,8 @@ export default function Login() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-          <img src="https://placehold.co/400x100/38bdf8/white?text=EduLink" alt="EduLink Logo" style={{ height: '64px', margin: '0 auto', display: 'block', borderRadius: '8px' }} />
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '6px' }}>
+          <img src="/logo.png" alt="duLink Logo" style={{ height: '60px', margin: '0 auto', display: 'block' }} />
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '10px' }}>
             Sign in to your school portal
           </p>
         </div>
