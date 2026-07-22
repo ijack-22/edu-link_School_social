@@ -69,7 +69,7 @@ export const Sidebar = () => {
     <nav className="sidebar">
       {/* Logo */}
       <div style={{ marginBottom: '32px', padding: '0 8px' }}>
-        <img src="https://placehold.co/400x100/38bdf8/white?text=EduLink" alt="EduLink Logo" style={{ height: '40px', display: 'block', borderRadius: '4px' }} />
+        <img src="/logo.png" alt="duLink Logo" style={{ height: '44px', display: 'block' }} />
         {user && (
           <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
