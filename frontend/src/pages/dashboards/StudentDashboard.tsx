@@ -5,11 +5,16 @@ export const StudentDashboard = () => {
   const { user } = useAuth();
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2.2rem', fontWeight: 700 }}>
-          Welcome back, {user?.name?.split(' ')[0]} 👋
-        </h1>
-        <p style={{ color: 'var(--text-muted)', marginTop: '6px' }}>Here's your learning overview for today.</p>
+      <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ padding: '10px', borderRadius: '12px', background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8' }}>
+          <GraduationCap size={28} />
+        </div>
+        <div>
+          <h1 style={{ fontSize: '2.2rem', fontWeight: 700, margin: 0 }}>
+            Welcome back, {user?.name?.split(' ')[0]}
+          </h1>
+          <p style={{ color: 'var(--text-muted)', marginTop: '4px', margin: 0 }}>Here's your learning overview for today.</p>
+        </div>
       </header>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>

@@ -58,6 +58,7 @@ export const SchoolWorkflow = () => {
   const [notice, setNotice] = useState('');
   const [createdPassword, setCreatedPassword] = useState('');
   const [parentPassword, setParentPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('student');
 
   const students = useMemo(() => users.filter((item) => item.role === 'student'), [users]);
   const canCreateUsers = user?.role === 'admin';
@@ -188,28 +189,78 @@ export const SchoolWorkflow = () => {
       <div style={{ display: 'grid', gap: '20px' }}>
         {canCreateUsers && (
           <section className="glass-panel" style={panelStyle}>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Create user account</h2>
-            <form onSubmit={createAccount} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '12px' }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>Create User Account</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '4px 0 12px 0' }}>Select the type of account you want to create to reveal the required details.</p>
+
+            {/* Role Selector Buttons */}
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+              {[
+                { id: 'student', label: 'Student (+ Parent)' },
+                { id: 'teacher', label: 'Teacher' },
+                { id: 'parent', label: 'Parent Only' },
+                { id: 'registrar', label: 'Registrar' },
+                { id: 'administration', label: 'Administrator' },
+              ].map((roleItem) => {
+                const isSelected = selectedRole === roleItem.id;
+                return (
+                  <button
+                    key={roleItem.id}
+                    type="button"
+                    onClick={() => setSelectedRole(roleItem.id)}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '20px',
+                      border: isSelected ? '1px solid var(--accent)' : '1px solid var(--glass-border)',
+                      background: isSelected ? 'rgba(56, 189, 248, 0.18)' : 'rgba(255,255,255,0.03)',
+                      color: isSelected ? 'var(--accent)' : 'var(--text-muted)',
+                      fontWeight: isSelected ? 600 : 400,
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {roleItem.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <form onSubmit={createAccount} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px' }}>
+              <input type="hidden" name="role" value={selectedRole} />
+
               <input name="first_name" placeholder="First name" style={fieldStyle} />
               <input name="last_name" placeholder="Last name" style={fieldStyle} />
-              <input name="username" placeholder="Username" required style={fieldStyle} />
-              <input name="email" type="email" placeholder="Email" required style={fieldStyle} />
-              <select name="role" required style={fieldStyle} defaultValue="student">
-                <option value="student">Student</option>
-                <option value="teacher">Teacher</option>
-                <option value="parent">Parent</option>
-                <option value="registrar">Registrar</option>
-                <option value="administration">Administration</option>
-              </select>
-              <input name="class_name" placeholder="Student class" style={fieldStyle} />
-              <input name="class_names" placeholder="Teacher classes, comma separated" style={fieldStyle} />
-              <input name="section" placeholder="Section" style={fieldStyle} />
-              <input name="parent_name" placeholder="Parent name for student" style={fieldStyle} />
-              <input name="parent_email" type="email" placeholder="Parent email for student" style={fieldStyle} />
-              <button className="btn" style={{ minHeight: '44px' }}>Create account</button>
+              <input name="username" placeholder="Username *" required style={fieldStyle} />
+              <input name="email" type="email" placeholder="Email address *" required style={fieldStyle} />
+
+              {selectedRole === 'student' && (
+                <>
+                  <input name="class_name" placeholder="Class Name (e.g. Grade 10)" style={fieldStyle} />
+                  <input name="section" placeholder="Section (e.g. A)" style={fieldStyle} />
+                  <input name="parent_name" placeholder="Parent Full Name (Optional)" style={fieldStyle} />
+                  <input name="parent_email" type="email" placeholder="Parent Email (Optional)" style={fieldStyle} />
+                </>
+              )}
+
+              {selectedRole === 'teacher' && (
+                <>
+                  <input name="class_names" placeholder="Assigned Classes (e.g. Math, Physics)" style={fieldStyle} />
+                  <input name="section" placeholder="Section (e.g. A)" style={fieldStyle} />
+                </>
+              )}
+
+              <div style={{ gridColumn: '1 / -1', marginTop: '4px' }}>
+                <button className="btn" style={{ padding: '12px 28px' }}>Create {selectedRole.toUpperCase()} Account</button>
+              </div>
             </form>
-            {createdPassword && <p>New user password: <strong>{createdPassword}</strong></p>}
-            {parentPassword && <p>New parent password: <strong>{parentPassword}</strong></p>}
+
+            {createdPassword && (
+              <div style={{ background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.3)', borderRadius: '10px', padding: '14px', marginTop: '14px' }}>
+                <p style={{ margin: 0, color: '#34d399', fontWeight: 600 }}>Account created successfully!</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem' }}>User Temporary Password: <strong style={{ color: 'white' }}>{createdPassword}</strong></p>
+                {parentPassword && <p style={{ margin: '4px 0 0 0', fontSize: '0.9rem' }}>Parent Temporary Password: <strong style={{ color: 'white' }}>{parentPassword}</strong></p>}
+              </div>
+            )}
           </section>
         )}
 

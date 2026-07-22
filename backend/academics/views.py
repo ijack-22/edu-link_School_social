@@ -193,3 +193,42 @@ class AttendanceRecordViewSet(viewsets.ModelViewSet):
         student = serializer.validated_data.get('student') or self.get_object().student
         ensure_teacher_owns_students(self.request.user, [student.id])
         serializer.save(school=self.request.user.school, marked_by=self.request.user)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class AttendanceSummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if request.user.role not in {'administration', 'admin', 'registrar', 'teacher'}:
+            raise PermissionDenied('Only administrators and staff can view attendance summaries.')
+
+        school = request.user.school
+        class_id = request.query_params.get('class_id')
+
+        student_classes = StudentClass.objects.filter(school=school)
+        if class_id:
+            student_classes = student_classes.filter(enrolled_class_id=class_id)
+
+        summary = []
+        for sc in student_classes.select_related('user', 'enrolled_class'):
+            records = AttendanceRecord.objects.filter(student=sc.user)
+            total = records.count()
+            present = records.filter(status='present').count()
+            pct = round((present / total * 100), 1) if total > 0 else 100.0
+
+            summary.append({
+                'student_id': str(sc.user.id),
+                'student_name': sc.user.get_full_name() or sc.user.username,
+                'email': sc.user.email,
+                'class_id': str(sc.enrolled_class.id),
+                'class_name': f"{sc.enrolled_class.name} - {sc.enrolled_class.section}",
+                'total_records': total,
+                'present_records': present,
+                'attendance_percentage': pct,
+            })
+
+        return Response(summary)
+

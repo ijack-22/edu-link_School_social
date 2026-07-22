@@ -248,6 +248,37 @@ class CookieTokenRefreshView(TokenRefreshView):
         return response
 
 
+class AdminStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        if request.user.role not in {'administration', 'admin'}:
+            return Response({'detail': 'Only administrators can access stats.'}, status=status.HTTP_403_FORBIDDEN)
+
+        school = request.user.school
+        total_users = User.objects.filter(school=school).count()
+
+        from academics.models import Class, AttendanceRecord
+        from social.models import Complaint
+
+        active_classes = Class.objects.filter(school=school).count()
+
+        records = AttendanceRecord.objects.filter(school=school)
+        total_records = records.count()
+        present_records = records.filter(status='present').count()
+        avg_attendance = round((present_records / total_records * 100), 1) if total_records > 0 else 100.0
+
+        pending_issues = Complaint.objects.filter(school=school, status='pending').count()
+
+        return Response({
+            'total_users': total_users,
+            'active_classes': active_classes,
+            'avg_attendance': f"{avg_attendance}%",
+            'pending_issues': pending_issues,
+        })
+
+
+
 
 
 
