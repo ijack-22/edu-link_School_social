@@ -19,12 +19,12 @@ User = get_user_model()
 
 class EmailTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
+        email = request.data.get('email', '').strip()
         password = request.data.get('password')
 
         if email and password:
             try:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email__iexact=email)
                 # request.data might be immutable, make a mutable copy
                 if hasattr(request.data, 'copy'):
                     data = request.data.copy()
