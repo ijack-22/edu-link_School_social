@@ -1,6 +1,7 @@
 import { Home, Users, BookOpen, FileText, BellRing, LogOut, Settings, BarChart2, MessageSquare, AlertCircle, ClipboardList, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
 
 const studentLinks = [
   { to: '/dashboard/student', label: 'Home', icon: Home },
@@ -71,7 +72,12 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const roleColor = user ? ROLE_COLOR[user.role] : '#38bdf8';
 
   return (
-    <nav className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
+    <motion.nav 
+      initial={{ x: -280 }}
+      animate={{ x: 0 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      className={`sidebar ${isOpen ? 'mobile-open' : ''}`}
+    >
       {/* Logo */}
       <div style={{ marginBottom: '32px', padding: '0 8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -100,10 +106,17 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       </div>
 
       {/* Nav links */}
-      {links.map(({ to, label, icon: Icon }) => (
-        <NavLink key={to} to={to} end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={onClose}>
-          <Icon size={20} /> {label}
-        </NavLink>
+      {links.map(({ to, label, icon: Icon }, index) => (
+        <motion.div
+          key={to}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1 + index * 0.05 }}
+        >
+          <NavLink to={to} end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={onClose}>
+            <Icon size={20} /> {label}
+          </NavLink>
+        </motion.div>
       ))}
 
       {/* Bottom actions */}
@@ -121,19 +134,17 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         >
           <BellRing size={20} /> Notifications
         </button>
-        <button
-          onClick={logout}
-          className="nav-link"
-          style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left', color: '#f87171' }}
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="nav-link" 
+          onClick={logout} 
+          style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', width: '100%', textAlign: 'left' }}
         >
           <LogOut size={20} /> Sign Out
-        </button>
+        </motion.button>
       </div>
-    </nav>
+    </motion.nav>
   );
-};
-
-
-
 
 

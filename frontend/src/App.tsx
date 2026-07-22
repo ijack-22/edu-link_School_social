@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/Sidebar';
 import { Menu } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Login from './pages/Login';
 import { Feeds } from './pages/Feeds';
 import { Classes } from './pages/Classes';
@@ -16,6 +17,18 @@ import { SchoolWorkflow } from './pages/SchoolWorkflow';
 import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 import './index.css';
+
+const PageTransition = ({ children }: { children: React.ReactNode }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ duration: 0.2, ease: 'easeOut' }}
+    style={{ width: '100%', height: '100%' }}
+  >
+    {children}
+  </motion.div>
+);
 
 /**
  * AppLayout — shows sidebar + main only when logged in.
@@ -51,45 +64,47 @@ const AppLayout = () => {
         </>
       )}
       <main className="main-content">
-        <Routes>
-          {/* Public: redirect root to login if not authenticated */}
-          <Route path="/" element={<Navigate to={homePath} replace />} />
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            {/* Public: redirect root to login if not authenticated */}
+            <Route path="/" element={<Navigate to={homePath} replace />} />
 
-          {/* Student routes */}
-          <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-            <Route path="/dashboard/student" element={<StudentDashboard />} />
-          </Route>
-
-          {/* Teacher routes */}
-          <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
-            <Route path="/dashboard/teacher" element={<TeacherDashboard />} />
-          </Route>
-
-          {/* Admin routes */}
-          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/dashboard/admin" element={<AdminDashboard />} />
-            <Route path="/users" element={<Users />} />
-          </Route>
-
-          {/* Parent routes */}
-          <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
-            <Route path="/dashboard/parent" element={<ParentDashboard />} />
-          </Route>
-
-          {/* Shared protected routes (all roles) */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/feeds" element={<Feeds />} />
-            <Route path="/classes" element={<Classes />} />
-            <Route element={<ProtectedRoute allowedRoles={['student', 'parent', 'admin', 'registrar']} />}>
-              <Route path="/messages" element={<Messages />} />
+            {/* Student routes */}
+            <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+              <Route path="/dashboard/student" element={<PageTransition><StudentDashboard /></PageTransition>} />
             </Route>
-            <Route path="/workflow" element={<SchoolWorkflow />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
 
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to={homePath} replace />} />
-        </Routes>
+            {/* Teacher routes */}
+            <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
+              <Route path="/dashboard/teacher" element={<PageTransition><TeacherDashboard /></PageTransition>} />
+            </Route>
+
+            {/* Admin routes */}
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/dashboard/admin" element={<PageTransition><AdminDashboard /></PageTransition>} />
+              <Route path="/users" element={<PageTransition><Users /></PageTransition>} />
+            </Route>
+
+            {/* Parent routes */}
+            <Route element={<ProtectedRoute allowedRoles={['parent']} />}>
+              <Route path="/dashboard/parent" element={<PageTransition><ParentDashboard /></PageTransition>} />
+            </Route>
+
+            {/* Shared protected routes (all roles) */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/feeds" element={<PageTransition><Feeds /></PageTransition>} />
+              <Route path="/classes" element={<PageTransition><Classes /></PageTransition>} />
+              <Route element={<ProtectedRoute allowedRoles={['student', 'parent', 'admin', 'registrar']} />}>
+                <Route path="/messages" element={<PageTransition><Messages /></PageTransition>} />
+              </Route>
+              <Route path="/workflow" element={<PageTransition><SchoolWorkflow /></PageTransition>} />
+              <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
+            </Route>
+
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to={homePath} replace />} />
+          </Routes>
+        </AnimatePresence>
       </main>
     </div>
   );

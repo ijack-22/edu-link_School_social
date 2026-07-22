@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type GradeItem = {
   id: string;
@@ -112,19 +113,31 @@ export const SchoolWorkflow = () => {
       parent_name: String(form.get('parent_name') || ''),
       parent_email: String(form.get('parent_email') || ''),
     };
-    const response = await apiClient.post('users/create/', payload);
-    setCreatedEmail(payload.email);
-    setCreatedPassword(response.data.temporary_password || '');
-    if (response.data.parent_temporary_password) {
-      setParentEmail(payload.parent_email);
-      setParentPassword(response.data.parent_temporary_password);
-    } else {
-      setParentEmail('');
+    
+    try {
+      const response = await apiClient.post('users/create/', payload);
+      setCreatedEmail(payload.email);
+      setCreatedPassword(response.data.temporary_password || '');
+      if (response.data.parent_temporary_password) {
+        setParentEmail(payload.parent_email);
+        setParentPassword(response.data.parent_temporary_password);
+      } else {
+        setParentEmail('');
+        setParentPassword('');
+      }
+      setNotice('Account created successfully. See login credentials below.');
+      event.currentTarget.reset();
+      loadData();
+    } catch (err: any) {
+      console.error(err);
+      if (err.response?.data) {
+        setNotice(`Error: ${JSON.stringify(err.response.data)}`);
+      } else {
+        setNotice('Failed to create account. Please check the inputs.');
+      }
+      setCreatedPassword('');
       setParentPassword('');
     }
-    setNotice('Account created successfully. See login credentials below.');
-    event.currentTarget.reset();
-    loadData();
   };
 
   const submitGrade = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -179,18 +192,48 @@ export const SchoolWorkflow = () => {
     loadData();
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 15 },
+    show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+  };
+
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '24px' }}>
+      <motion.header 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.4 }}
+        style={{ marginBottom: '24px' }}
+      >
         <h1 style={{ fontSize: '2rem', fontWeight: 700 }}>School workflow</h1>
         <p style={{ color: 'var(--text-muted)', marginTop: '6px' }}>Manage grades, attendance, complaints, accounts, and password settings.</p>
-      </header>
+      </motion.header>
 
-      {notice && <div className="glass-panel" style={{ padding: '14px', marginBottom: '18px', color: '#34d399' }}>{notice}</div>}
+      <AnimatePresence>
+        {notice && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, scale: 0.9 }} 
+            animate={{ opacity: 1, height: 'auto', scale: 1 }} 
+            exit={{ opacity: 0, height: 0, scale: 0.9 }}
+            className="glass-panel" 
+            style={{ padding: '14px', marginBottom: '18px', color: '#34d399', overflow: 'hidden' }}
+          >
+            {notice}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div style={{ display: 'grid', gap: '20px' }}>
+      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'grid', gap: '20px' }}>
         {canCreateUsers && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>Create User Account</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '4px 0 12px 0' }}>Select the type of account you want to create to reveal the required details.</p>
 
@@ -274,11 +317,11 @@ export const SchoolWorkflow = () => {
                 )}
               </div>
             )}
-          </section>
+          </motion.section>
         )}
 
         {canSubmitGrades && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Send grade for approval</h2>
             <form onSubmit={submitGrade} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
               <select name="student" required style={fieldStyle}>{students.map((student) => <option key={student.id} value={student.id}>{student.full_name || student.username}</option>)}</select>
@@ -289,11 +332,11 @@ export const SchoolWorkflow = () => {
               <input name="term" placeholder="Term" style={fieldStyle} />
               <button className="btn" style={{ minHeight: '44px' }}>Send grade</button>
             </form>
-          </section>
+          </motion.section>
         )}
 
         {canSubmitGrades && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Record attendance</h2>
             <form onSubmit={markAttendance} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
               <select name="student" required style={fieldStyle}>{students.map((student) => <option key={student.id} value={student.id}>{student.full_name || student.username}</option>)}</select>
@@ -302,11 +345,11 @@ export const SchoolWorkflow = () => {
               <input name="notes" placeholder="Notes" style={fieldStyle} />
               <button className="btn" style={{ minHeight: '44px' }}>Save attendance</button>
             </form>
-          </section>
+          </motion.section>
         )}
 
         {canSubmitGrades && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Upload assignment or note</h2>
             <form onSubmit={uploadClassWork} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
               <select name="work_type" required style={fieldStyle}>
@@ -320,23 +363,23 @@ export const SchoolWorkflow = () => {
               <textarea name="instructions" placeholder="Instructions or note details" rows={3} style={fieldStyle} />
               <button className="btn" style={{ minHeight: '44px' }}>Submit</button>
             </form>
-          </section>
+          </motion.section>
         )}
         {canSubmitComplaint && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Submit complaint</h2>
             <form onSubmit={submitComplaint} style={{ display: 'grid', gap: '12px' }}>
               <input name="title" placeholder="Title" required style={fieldStyle} />
               <textarea name="description" placeholder="Complaint details" required rows={4} style={fieldStyle} />
               <button className="btn" style={{ minHeight: '44px' }}>Send complaint</button>
             </form>
-          </section>
+          </motion.section>
         )}
 
 
 
         {(canApproveGrades || user?.role === 'teacher' || user?.role === 'student' || user?.role === 'parent') && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Grades</h2>
             {grades.length ? grades.map((grade) => (
               <div key={grade.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '10px 0', borderBottom: '1px solid var(--glass-border)' }}>
@@ -344,30 +387,30 @@ export const SchoolWorkflow = () => {
                 {canApproveGrades && grade.status === 'pending' && <span><button onClick={() => updateGradeStatus(grade, 'approved')} className="btn">Approve</button> <button onClick={() => updateGradeStatus(grade, 'rejected')} className="btn">Reject</button></span>}
               </div>
             )) : <p style={{ color: 'var(--text-muted)' }}>No grades available.</p>}
-          </section>
+          </motion.section>
         )}
 
         {(user?.role === 'teacher' || user?.role === 'student' || user?.role === 'parent') && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Attendance</h2>
             {attendance.length ? attendance.map((item) => <div key={item.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--glass-border)' }}><strong>{item.student_name || item.student}</strong> - {item.date}: {item.status}</div>) : <p style={{ color: 'var(--text-muted)' }}>No attendance records available.</p>}
-          </section>
+          </motion.section>
         )}
 
         {canSeeComplaints && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Complaints for admin</h2>
             {complaints.length ? complaints.map((item) => <div key={item.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--glass-border)' }}><strong>{item.title}</strong> from {item.submitted_by_name}: {item.description}</div>) : <p style={{ color: 'var(--text-muted)' }}>No complaints submitted.</p>}
-          </section>
+          </motion.section>
         )}
 
         {canCreateUsers && (
-          <section className="glass-panel" style={panelStyle}>
+          <motion.section variants={itemVariants} className="glass-panel" style={panelStyle}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700 }}>Accounts</h2>
             {users.map((item) => <div key={item.id} style={{ padding: '10px 0', borderBottom: '1px solid var(--glass-border)' }}><strong>{item.full_name || item.username}</strong> - {item.email} ({item.role})</div>)}
-          </section>
+          </motion.section>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
