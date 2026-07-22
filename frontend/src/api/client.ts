@@ -11,7 +11,7 @@ export const getAccessToken = () => inMemoryAccessToken;
 
 export const apiClient = axios.create({
   // Use relative path in production (Vercel) to hit Serverless Functions, else fallback to localhost
-  baseURL: import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api/v1' : 'http://localhost:8000/api/v1'),
+  baseURL: import.meta.env.PROD ? '/api/v1' : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'),
   // MUST be true to automatically send and receive the HttpOnly refresh token cookie
   withCredentials: true,
   headers: {
