@@ -1,4 +1,4 @@
-import { Home, Users, BookOpen, FileText, BellRing, LogOut, Settings, BarChart2, MessageSquare, AlertCircle, ClipboardList } from 'lucide-react';
+import { Home, Users, BookOpen, FileText, BellRing, LogOut, Settings, BarChart2, MessageSquare, AlertCircle, ClipboardList, X } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -60,16 +60,26 @@ const ROLE_COLOR: Record<string, string> = {
   registrar: '#f59e0b',
 };
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const { user, logout } = useAuth();
   const links = user ? LINKS_BY_ROLE[user.role] : [];
   const roleColor = user ? ROLE_COLOR[user.role] : '#38bdf8';
 
   return (
-    <nav className="sidebar">
+    <nav className={`sidebar ${isOpen ? 'mobile-open' : ''}`}>
       {/* Logo */}
       <div style={{ marginBottom: '32px', padding: '0 8px' }}>
-        <img src="/logo.png" alt="duLink Logo" style={{ height: '44px', display: 'block' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <img src="/logo.png" alt="duLink Logo" style={{ height: '44px', display: 'block' }} />
+          <button className="sidebar-close-btn btn" onClick={onClose} style={{ padding: '8px', background: 'transparent', color: 'var(--text-muted)' }}>
+            <X size={24} />
+          </button>
+        </div>
         {user && (
           <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
@@ -91,7 +101,7 @@ export const Sidebar = () => {
 
       {/* Nav links */}
       {links.map(({ to, label, icon: Icon }) => (
-        <NavLink key={to} to={to} end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
+        <NavLink key={to} to={to} end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'} onClick={onClose}>
           <Icon size={20} /> {label}
         </NavLink>
       ))}

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Sidebar } from './components/Sidebar';
+import { Menu } from 'lucide-react';
 import Login from './pages/Login';
 import { Feeds } from './pages/Feeds';
 import { Classes } from './pages/Classes';
@@ -20,6 +22,7 @@ import './index.css';
  * On /login the sidebar is hidden so the login screen fills the whole viewport.
  */
 const AppLayout = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
   const isLoginPage = location.pathname === '/login';
@@ -35,7 +38,18 @@ const AppLayout = () => {
 
   return (
     <div className="app-layout">
-      {user && <Sidebar />}
+      {user && (
+        <>
+          <div className={`sidebar-overlay ${isMobileMenuOpen ? 'mobile-open' : ''}`} onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="mobile-header">
+            <img src="/logo.png" alt="duLink Logo" style={{ height: '32px' }} />
+            <button className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--text-main)', border: '1px solid var(--glass-border)' }} onClick={() => setIsMobileMenuOpen(true)}>
+              <Menu size={24} />
+            </button>
+          </div>
+          <Sidebar isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)} />
+        </>
+      )}
       <main className="main-content">
         <Routes>
           {/* Public: redirect root to login if not authenticated */}
